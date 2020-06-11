@@ -1,0 +1,1550 @@
+
+
+<!-- Generator: Widdershins v3.6.6 -->
+
+<h1 id="user-administration-and-authentication">User administration and authentication v1</h1>
+
+> Scroll down for code samples, example requests and responses. Select a language for code samples from the tabs above or the mobile navigation menu.
+
+An API for user administration and user authentication handling. Intended for use by the web GUI.
+All responses from the API will contain 'X-MEN-RequestID' header with server-side generated request ID.
+
+Base URLs:
+
+* <a href="https://docker.mender.io/api/management/v1/useradm">https://docker.mender.io/api/management/v1/useradm</a>
+
+
+## Log in to Mender
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X POST https://docker.mender.io/api/management/v1/useradm/auth/login \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/jwt' \
+  -H 'Authorization: string'
+
+```
+
+```http
+POST https://docker.mender.io/api/management/v1/useradm/auth/login HTTP/1.1
+Host: docker.mender.io
+Content-Type: application/json
+Accept: application/jwt
+Authorization: string
+
+```
+
+```javascript
+const inputBody = '{
+  "application/json": {
+    "token2fa": "012234"
+  }
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/jwt',
+  'Authorization':'string'
+
+};
+
+fetch('https://docker.mender.io/api/management/v1/useradm/auth/login',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Content-Type' => 'application/json',
+  'Accept' => 'application/jwt',
+  'Authorization' => 'string'
+}
+
+result = RestClient.post 'https://docker.mender.io/api/management/v1/useradm/auth/login',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/jwt',
+  'Authorization': 'string'
+}
+
+r = requests.post('https://docker.mender.io/api/management/v1/useradm/auth/login', headers = headers)
+
+print r.json()
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Content-Type' => 'application/json',
+    'Accept' => 'application/jwt',
+    'Authorization' => 'string',
+    
+    );
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('POST','https://docker.mender.io/api/management/v1/useradm/auth/login', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("https://docker.mender.io/api/management/v1/useradm/auth/login");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("POST");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"application/jwt"},
+        "Authorization": []string{"string"},
+        
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "https://docker.mender.io/api/management/v1/useradm/auth/login", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`POST /auth/login`
+
+Accepts user credentials via standard Basic Auth, and returns a
+JWT token to be used for authentication in subsequent requests.
+
+> Body parameter
+
+```json
+{
+  "application/json": {
+    "token2fa": "012234"
+  }
+}
+```
+
+<h3 id="log-in-to-mender-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|Authorization|header|string|true|Standard Basic Auth header, based on user's credentials.|
+|body|body|[Twofactor](#schematwofactor)|false|Two factor authentication token, required if two factor authentication is enabled|
+
+#### Detailed descriptions
+
+**Authorization**: Standard Basic Auth header, based on user's credentials.
+
+> Example responses
+
+> Authentication successful - a new JWT is issued and returned.
+The JWT is signed with the API's private key ('RS256' signing algorithm),
+and contains the following standard claims:
+* 'iss' - issuer
+* 'exp' - expiry date
+* 'sub' - unique, autogenerated user ID
+* 'scp' - 'mender.*', allows access to all APIs/methods
+
+> 400 Response
+
+<h3 id="log-in-to-mender-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|Authentication successful - a new JWT is issued and returned.
+The JWT is signed with the API's private key ('RS256' signing algorithm),
+and contains the following standard claims:
+* 'iss' - issuer
+* 'exp' - expiry date
+* 'sub' - unique, autogenerated user ID
+* 'scp' - 'mender.*', allows access to all APIs/methods|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad request, see error message for details.|[Error](#schemaerror)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|The user is not authorized. There are two possible scenarios for that:
+* username/password do not match
+* token for two factor authentication (if enabled) was not correct|[Error](#schemaerror)|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal server error.|[Error](#schemaerror)|
+
+<h3 id="log-in-to-mender-responseschema">Response Schema</h3>
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## List users
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X GET https://docker.mender.io/api/management/v1/useradm/users \
+  -H 'Accept: */*' \
+  -H 'Authorization: string'
+
+```
+
+```http
+GET https://docker.mender.io/api/management/v1/useradm/users HTTP/1.1
+Host: docker.mender.io
+Accept: */*
+Authorization: string
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'*/*',
+  'Authorization':'string'
+
+};
+
+fetch('https://docker.mender.io/api/management/v1/useradm/users',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Accept' => '*/*',
+  'Authorization' => 'string'
+}
+
+result = RestClient.get 'https://docker.mender.io/api/management/v1/useradm/users',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Accept': '*/*',
+  'Authorization': 'string'
+}
+
+r = requests.get('https://docker.mender.io/api/management/v1/useradm/users', headers = headers)
+
+print r.json()
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Accept' => '*/*',
+    'Authorization' => 'string',
+    
+    );
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('GET','https://docker.mender.io/api/management/v1/useradm/users', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("https://docker.mender.io/api/management/v1/useradm/users");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Accept": []string{"*/*"},
+        "Authorization": []string{"string"},
+        
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("GET", "https://docker.mender.io/api/management/v1/useradm/users", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`GET /users`
+
+Returns a non-paged collection of users information.
+
+<h3 id="list-users-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|Authorization|header|string(Bearer [token])|true|Contains the JWT token issued by the User Administration and Authentication Service.|
+
+> Example responses
+
+> 200 Response
+
+<h3 id="list-users-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|Successful response.|Inline|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|The user cannot be granted authentication.|[Error](#schemaerror)|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal server error.|[Error](#schemaerror)|
+
+<h3 id="list-users-responseschema">Response Schema</h3>
+
+Status Code **200**
+
+*ListOfUsers*
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|ListOfUsers|[[User](#schemauser)]|false|none|[User descriptor.]|
+|» email|string|true|none|A unique email address.|
+|» id|string|true|none|User Id.|
+|» created_ts|string(date-time)|false|none|Server-side timestamp of the user creation.|
+|» updated_ts|string(date-time)|false|none|Server-side timestamp of the last user information update.|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## Create user
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X POST https://docker.mender.io/api/management/v1/useradm/users \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: */*' \
+  -H 'Authorization: string'
+
+```
+
+```http
+POST https://docker.mender.io/api/management/v1/useradm/users HTTP/1.1
+Host: docker.mender.io
+Content-Type: application/json
+Accept: */*
+Authorization: string
+
+```
+
+```javascript
+const inputBody = '{
+  "application/json": {
+    "email": "user@acme.com",
+    "password": "mypass1234"
+  }
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'*/*',
+  'Authorization':'string'
+
+};
+
+fetch('https://docker.mender.io/api/management/v1/useradm/users',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Content-Type' => 'application/json',
+  'Accept' => '*/*',
+  'Authorization' => 'string'
+}
+
+result = RestClient.post 'https://docker.mender.io/api/management/v1/useradm/users',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': '*/*',
+  'Authorization': 'string'
+}
+
+r = requests.post('https://docker.mender.io/api/management/v1/useradm/users', headers = headers)
+
+print r.json()
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Content-Type' => 'application/json',
+    'Accept' => '*/*',
+    'Authorization' => 'string',
+    
+    );
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('POST','https://docker.mender.io/api/management/v1/useradm/users', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("https://docker.mender.io/api/management/v1/useradm/users");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("POST");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"*/*"},
+        "Authorization": []string{"string"},
+        
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "https://docker.mender.io/api/management/v1/useradm/users", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`POST /users`
+
+> Body parameter
+
+```json
+{
+  "application/json": {
+    "email": "user@acme.com",
+    "password": "mypass1234"
+  }
+}
+```
+
+<h3 id="create-user-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|Authorization|header|string(Bearer [token])|true|Contains the JWT token issued by the User Administration and Authentication Service.|
+|body|body|[UserNew](#schemausernew)|true|New user data.|
+
+> Example responses
+
+> 400 Response
+
+<h3 id="create-user-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|201|[Created](https://tools.ietf.org/html/rfc7231#section-6.3.2)|The user was successfully created.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|The request body is malformed.|[Error](#schemaerror)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|The user cannot be granted authentication.|[Error](#schemaerror)|
+|422|[Unprocessable Entity](https://tools.ietf.org/html/rfc2518#section-10.3)|The email address is duplicated or password is too short.|[Error](#schemaerror)|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal server error.|[Error](#schemaerror)|
+
+### Response Headers
+
+|Status|Header|Type|Format|Description|
+|---|---|---|---|---|
+|201|Location|string||URI for the newly created 'User' resource.|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## Get user information
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X GET https://docker.mender.io/api/management/v1/useradm/users/{id} \
+  -H 'Accept: */*' \
+  -H 'Authorization: string'
+
+```
+
+```http
+GET https://docker.mender.io/api/management/v1/useradm/users/{id} HTTP/1.1
+Host: docker.mender.io
+Accept: */*
+Authorization: string
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'*/*',
+  'Authorization':'string'
+
+};
+
+fetch('https://docker.mender.io/api/management/v1/useradm/users/{id}',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Accept' => '*/*',
+  'Authorization' => 'string'
+}
+
+result = RestClient.get 'https://docker.mender.io/api/management/v1/useradm/users/{id}',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Accept': '*/*',
+  'Authorization': 'string'
+}
+
+r = requests.get('https://docker.mender.io/api/management/v1/useradm/users/{id}', headers = headers)
+
+print r.json()
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Accept' => '*/*',
+    'Authorization' => 'string',
+    
+    );
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('GET','https://docker.mender.io/api/management/v1/useradm/users/{id}', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("https://docker.mender.io/api/management/v1/useradm/users/{id}");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Accept": []string{"*/*"},
+        "Authorization": []string{"string"},
+        
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("GET", "https://docker.mender.io/api/management/v1/useradm/users/{id}", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`GET /users/{id}`
+
+Returns user information.
+
+<h3 id="get-user-information-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|id|path|string|true|User id.|
+|Authorization|header|string(Bearer [token])|true|Contains the JWT token issued by the User Administration and Authentication Service.|
+
+> Example responses
+
+> 200 Response
+
+<h3 id="get-user-information-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|Successful response - a user information is returned.|[User](#schemauser)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|The user cannot be granted authentication.|[Error](#schemaerror)|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The user was not found.|[Error](#schemaerror)|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal server error.|[Error](#schemaerror)|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## Update user information
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X PUT https://docker.mender.io/api/management/v1/useradm/users/{id} \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: */*' \
+  -H 'Authorization: string'
+
+```
+
+```http
+PUT https://docker.mender.io/api/management/v1/useradm/users/{id} HTTP/1.1
+Host: docker.mender.io
+Content-Type: application/json
+Accept: */*
+Authorization: string
+
+```
+
+```javascript
+const inputBody = '{
+  "application/json": {
+    "email": "new_email@acme.com"
+  }
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'*/*',
+  'Authorization':'string'
+
+};
+
+fetch('https://docker.mender.io/api/management/v1/useradm/users/{id}',
+{
+  method: 'PUT',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Content-Type' => 'application/json',
+  'Accept' => '*/*',
+  'Authorization' => 'string'
+}
+
+result = RestClient.put 'https://docker.mender.io/api/management/v1/useradm/users/{id}',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': '*/*',
+  'Authorization': 'string'
+}
+
+r = requests.put('https://docker.mender.io/api/management/v1/useradm/users/{id}', headers = headers)
+
+print r.json()
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Content-Type' => 'application/json',
+    'Accept' => '*/*',
+    'Authorization' => 'string',
+    
+    );
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('PUT','https://docker.mender.io/api/management/v1/useradm/users/{id}', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("https://docker.mender.io/api/management/v1/useradm/users/{id}");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("PUT");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"*/*"},
+        "Authorization": []string{"string"},
+        
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("PUT", "https://docker.mender.io/api/management/v1/useradm/users/{id}", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`PUT /users/{id}`
+
+Update user email or change user password.
+
+> Body parameter
+
+```json
+{
+  "application/json": {
+    "email": "new_email@acme.com"
+  }
+}
+```
+
+<h3 id="update-user-information-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|id|path|string|true|User id.|
+|Authorization|header|string(Bearer [token])|true|Contains the JWT token issued by the User Administration and Authentication Service.|
+|body|body|[UserUpdate](#schemauserupdate)|true|Updated user data.|
+
+> Example responses
+
+> 400 Response
+
+<h3 id="update-user-information-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|204|[No Content](https://tools.ietf.org/html/rfc7231#section-6.3.5)|User information updated.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|The request body is malformed.|[Error](#schemaerror)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|The user cannot be granted authentication.|[Error](#schemaerror)|
+|404|[Not Found](https://tools.ietf.org/html/rfc7231#section-6.5.4)|The user does not exist.|[Error](#schemaerror)|
+|422|[Unprocessable Entity](https://tools.ietf.org/html/rfc2518#section-10.3)|The email address is duplicated or password is too short.|[Error](#schemaerror)|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal server error.|[Error](#schemaerror)|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## Remove user from the system
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X DELETE https://docker.mender.io/api/management/v1/useradm/users/{id} \
+  -H 'Accept: */*' \
+  -H 'Authorization: string'
+
+```
+
+```http
+DELETE https://docker.mender.io/api/management/v1/useradm/users/{id} HTTP/1.1
+Host: docker.mender.io
+Accept: */*
+Authorization: string
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'*/*',
+  'Authorization':'string'
+
+};
+
+fetch('https://docker.mender.io/api/management/v1/useradm/users/{id}',
+{
+  method: 'DELETE',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Accept' => '*/*',
+  'Authorization' => 'string'
+}
+
+result = RestClient.delete 'https://docker.mender.io/api/management/v1/useradm/users/{id}',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Accept': '*/*',
+  'Authorization': 'string'
+}
+
+r = requests.delete('https://docker.mender.io/api/management/v1/useradm/users/{id}', headers = headers)
+
+print r.json()
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Accept' => '*/*',
+    'Authorization' => 'string',
+    
+    );
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('DELETE','https://docker.mender.io/api/management/v1/useradm/users/{id}', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("https://docker.mender.io/api/management/v1/useradm/users/{id}");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("DELETE");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Accept": []string{"*/*"},
+        "Authorization": []string{"string"},
+        
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("DELETE", "https://docker.mender.io/api/management/v1/useradm/users/{id}", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`DELETE /users/{id}`
+
+Remove user information from the system.
+
+<h3 id="remove-user-from-the-system-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|id|path|string|true|User id.|
+|Authorization|header|string(Bearer [token])|true|Contains the JWT token issued by the User Administration and Authentication Service.|
+
+> Example responses
+
+> 401 Response
+
+<h3 id="remove-user-from-the-system-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|204|[No Content](https://tools.ietf.org/html/rfc7231#section-6.3.5)|User removed.|None|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|The user cannot be granted authentication.|[Error](#schemaerror)|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal server error.|[Error](#schemaerror)|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## Get user settings
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X GET https://docker.mender.io/api/management/v1/useradm/settings \
+  -H 'Accept: */*' \
+  -H 'Authorization: string'
+
+```
+
+```http
+GET https://docker.mender.io/api/management/v1/useradm/settings HTTP/1.1
+Host: docker.mender.io
+Accept: */*
+Authorization: string
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'*/*',
+  'Authorization':'string'
+
+};
+
+fetch('https://docker.mender.io/api/management/v1/useradm/settings',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Accept' => '*/*',
+  'Authorization' => 'string'
+}
+
+result = RestClient.get 'https://docker.mender.io/api/management/v1/useradm/settings',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Accept': '*/*',
+  'Authorization': 'string'
+}
+
+r = requests.get('https://docker.mender.io/api/management/v1/useradm/settings', headers = headers)
+
+print r.json()
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Accept' => '*/*',
+    'Authorization' => 'string',
+    
+    );
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('GET','https://docker.mender.io/api/management/v1/useradm/settings', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("https://docker.mender.io/api/management/v1/useradm/settings");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Accept": []string{"*/*"},
+        "Authorization": []string{"string"},
+        
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("GET", "https://docker.mender.io/api/management/v1/useradm/settings", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`GET /settings`
+
+Returns user settings.
+
+<h3 id="get-user-settings-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|Authorization|header|string(Bearer [token])|true|Contains the JWT token issued by the User Administration and Authentication Service.|
+
+> Example responses
+
+> 200 Response
+
+<h3 id="get-user-settings-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|Successful response - a user information is returned.|[Settings](#schemasettings)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|The user cannot be granted authentication.|[Error](#schemaerror)|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal server error.|[Error](#schemaerror)|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## Set user settings
+
+> Code samples
+
+```shell
+# You can also use wget
+curl -X POST https://docker.mender.io/api/management/v1/useradm/settings \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: */*' \
+  -H 'Authorization: string'
+
+```
+
+```http
+POST https://docker.mender.io/api/management/v1/useradm/settings HTTP/1.1
+Host: docker.mender.io
+Content-Type: application/json
+Accept: */*
+Authorization: string
+
+```
+
+```javascript
+const inputBody = '{}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'*/*',
+  'Authorization':'string'
+
+};
+
+fetch('https://docker.mender.io/api/management/v1/useradm/settings',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```ruby
+require 'rest-client'
+require 'json'
+
+headers = {
+  'Content-Type' => 'application/json',
+  'Accept' => '*/*',
+  'Authorization' => 'string'
+}
+
+result = RestClient.post 'https://docker.mender.io/api/management/v1/useradm/settings',
+  params: {
+  }, headers: headers
+
+p JSON.parse(result)
+
+```
+
+```python
+import requests
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': '*/*',
+  'Authorization': 'string'
+}
+
+r = requests.post('https://docker.mender.io/api/management/v1/useradm/settings', headers = headers)
+
+print r.json()
+
+```
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+$headers = array(
+    'Content-Type' => 'application/json',
+    'Accept' => '*/*',
+    'Authorization' => 'string',
+    
+    );
+
+$client = new \GuzzleHttp\Client();
+
+// Define array of request body.
+$request_body = array();
+
+try {
+    $response = $client->request('POST','https://docker.mender.io/api/management/v1/useradm/settings', array(
+        'headers' => $headers,
+        'json' => $request_body,
+       )
+    );
+    print_r($response->getBody()->getContents());
+ }
+ catch (\GuzzleHttp\Exception\BadResponseException $e) {
+    // handle exception or api errors.
+    print_r($e->getMessage());
+ }
+
+ // ...
+
+```
+
+```java
+URL obj = new URL("https://docker.mender.io/api/management/v1/useradm/settings");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("POST");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
+```go
+package main
+
+import (
+       "bytes"
+       "net/http"
+)
+
+func main() {
+
+    headers := map[string][]string{
+        "Content-Type": []string{"application/json"},
+        "Accept": []string{"*/*"},
+        "Authorization": []string{"string"},
+        
+    }
+
+    data := bytes.NewBuffer([]byte{jsonReq})
+    req, err := http.NewRequest("POST", "https://docker.mender.io/api/management/v1/useradm/settings", data)
+    req.Header = headers
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // ...
+}
+
+```
+
+`POST /settings`
+
+Create user settings or replace existing settings with provided object. This endpoint can be used to enable or disable two factor authentication by sending '{"2fa":"enabled"}' or '{"2fa":"disabled"}', respectively.
+
+> Body parameter
+
+```json
+{}
+```
+
+<h3 id="set-user-settings-parameters">Parameters</h3>
+
+|Name|In|Type|Required|Description|
+|---|---|---|---|---|
+|Authorization|header|string(Bearer [token])|true|Contains the JWT token issued by the User Administration and Authentication Service.|
+|body|body|[Settings](#schemasettings)|true|New user settings.|
+
+> Example responses
+
+> 400 Response
+
+<h3 id="set-user-settings-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|201|[Created](https://tools.ietf.org/html/rfc7231#section-6.3.2)|User settings set.|None|
+|400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|The request body is malformed.|[Error](#schemaerror)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|The user cannot be granted authentication.|[Error](#schemaerror)|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal server error.|[Error](#schemaerror)|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
